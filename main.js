@@ -1,10 +1,15 @@
 const main = document.createElement('div');
-const para = document.createElement('p')
+const para = document.createElement('p');
 const ulist = document.createElement('ul');
 const list = document.createElement('li');
+
+const form = document.createElement('form');
 const playerName = document.createElement('input');
 const score = document.createElement('input');
 const submitBtn = document.createElement('button');
+const scoreBtn = document.createElement('button');
+
+form.id = 'form'
 
 playerName.placeholder = 'Name';
 playerName.type = 'text';
@@ -13,7 +18,10 @@ score.placeholder = 'Score';
 score.type = 'number'
 
 submitBtn.textContent = 'Submit'
-submitBtn.type = 'submit';
+submitBtn.type = 'button';
+
+scoreBtn.textContent = 'Score'
+scoreBtn.type = 'button'
 
 main.textContent = 'LeaderBoard';
 
@@ -21,27 +29,18 @@ main.textContent = 'LeaderBoard';
 
 
 document.body.appendChild(main);
-main.appendChild(playerName);
-main.appendChild(score);
-main.appendChild(submitBtn);
+main.appendChild(form);
+main.appendChild(scoreBtn);
+form.appendChild(playerName);
+form.appendChild(score);
+form.appendChild(submitBtn);
 main.appendChild(para);
 main.appendChild(ulist);
 ulist.appendChild(list);
 list.textContent = '';
 
-// const playersScore = [
-
-//   { "user": "john", "score": 155 },
-//   { "user": "mark", "score": 156 },
-//   { "user": "michael", "score": 157 },
-//   { "user": "angel", "score": 158 },
-
-// ];
-
-
-
-async function postGameName(url = '', inputGameName = {}) {
-  const response = await fetch(url,
+function postGameName(url = '', inputGameName = {}) {
+  const response = fetch(url,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -49,11 +48,11 @@ async function postGameName(url = '', inputGameName = {}) {
     }
   );
 
-  return response.json();
+  return response;
 }
 
-async function postGameScore(url = '', userScore = {}) {
-  const response = await fetch(url,
+function postUserScore(url = '', userScore = {}) {
+  const response = fetch(url,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -61,32 +60,33 @@ async function postGameScore(url = '', userScore = {}) {
     }
   );
 
-  return response.json();
+  return response;
 }
 
-async function getGameScore(url) {
-  const response = await fetch(url);
-  return response.json();
+function getUsersScore(url) {
+  const response = fetch(url);
+  return response;
 }
 
 const gameName = { "name": 'My awesome ultra game' };
 
-postGameName('https://us-central1-js-capstone-backend.cloudfunctions.net/api/games', gameName)
-  .then(gamename => {
-    console.log(gamename);
-    postGameScore(`https://us-central1-js-capstone-backend.cloudfunctions.net/api/games/${gamename.result.split(' ')[3]}/scores`, { "user": `"${playerName.value}"`, "score": `"${score.value}"` })
-      .then((score) => {
-        console.log(score);
-        getGameScore('https://us-central1-js-capstone-backend.cloudfunctions.net/api/games/eBRgSwHrFmz4MjTjLIp4/scores')
-          .then(userScore => {
-            console.log(userScore);
-            list.textContent = JSON.stringify(userScore)
-          });
-      });
+// postGameName('https://us-central1-js-capstone-backend.cloudfunctions.net/api/games', gameName)
+//   .then(gamename => {
+//     console.log(gamename)
+//   })
+
+
+  submitBtn.addEventListener('click', function(e){
+    postUserScore('https://us-central1-js-capstone-backend.cloudfunctions.net/api/games/4Xty3QGmXJkxEl3MgwnA/scores',
+    { "user": playerName.value, "score": score.value })
+    e.preventDefault();
   })
 
-
-// submitBtn.addEventListener('click', function(event) {
-//   postGameScore()
-//   event.preventDefault()
-// })
+  scoreBtn.addEventListener('click', function(e) {
+    // console.log(getUsersScore('https://us-central1-js-capstone-backend.cloudfunctions.net/api/games/4Xty3QGmXJkxEl3MgwnA/scores'))
+    getUsersScore('https://us-central1-js-capstone-backend.cloudfunctions.net/api/games/4Xty3QGmXJkxEl3MgwnA/scores')
+    .then((response) => console.log(response, 'hello'))
+    e.preventDefault()
+  })
+  
+  
